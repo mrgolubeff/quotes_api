@@ -30,5 +30,11 @@ async def send_random_quote():
 
 
 @app.post('/quotes')
-async def create_quote():
-    ...
+async def create_quote(author: str, text: str):
+    with Session(db_engine) as session:
+        new_quote = Quote(
+            author=author,
+            content=text
+        )
+        session.add(new_quote)
+        session.commit()
