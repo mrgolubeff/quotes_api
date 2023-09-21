@@ -4,7 +4,9 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import DeclarativeBase
 from sqlalchemy.orm import Mapped
 from sqlalchemy.orm import mapped_column
+from pathlib import Path
 
+from config_reader import load_config
 
 class Base(DeclarativeBase):
     pass
@@ -24,5 +26,17 @@ class Quote(Base):
 
 
 if __name__ == '__main__':
-    engine = create_engine("sqlite://", echo=True)
+    data_folder = Path('ini_source')
+    file_to_open = data_folder / 'app.ini'
+    config = load_config(file_to_open)
+
+    user = config.db_connect.user
+    password = config.db_connect.password
+    ip = config.db_connect.ip
+    port = config.db_connect.port
+
+    engine = create_engine(
+        f"postgresql+pg8000://{user}:{password}@{ip}:{port}/oridia",
+        echo=True
+    )
     Base.metadata.create_all(engine)
